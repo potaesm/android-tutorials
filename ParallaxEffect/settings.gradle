@@ -1,0 +1,2 @@
+rootProject.name = "ParallaxEffect"
+include ':app'
