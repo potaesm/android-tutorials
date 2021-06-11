@@ -2,6 +2,7 @@ package com.suthinan.retrofitrx.view;
 
 import android.annotation.SuppressLint;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,11 +16,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.flexbox.FlexDirection;
-import com.google.android.flexbox.FlexboxLayoutManager;
 import com.suthinan.retrofitrx.R;
 import com.suthinan.retrofitrx.adapter.UsersAdapter;
-import com.suthinan.retrofitrx.model.Doc;
 import com.suthinan.retrofitrx.model.Jwt;
 import com.suthinan.retrofitrx.model.User;
 import com.suthinan.retrofitrx.service.RetrofitInstance;
@@ -27,21 +25,22 @@ import com.suthinan.retrofitrx.service.UserService;
 
 import java.util.ArrayList;
 
+import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.functions.Function;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
 
-    private UsersAdapter usersAdapter;
     private RecyclerView recyclerView;
     private ArrayList<User> userArrayList = new ArrayList<>();
-    private Observable<Jwt> loginResponseObservable;
-    private Observable<ArrayList<User>> usersResponseObservable;
-    private CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private SwipeRefreshLayout swipeContainer;
+    private Completable completable;
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private UserService userService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,9 +48,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         recyclerView = findViewById(R.id.recycler_view_users);
+        swipeContainer = findViewById(R.id.swipe_layout);
+        swipeContainer.setColorSchemeResources(R.color.design_default_color_primary);
+        swipeContainer.setOnRefreshListener(this::getUsers);
+        initView();
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> addAndEditUser(false, null));
+
+        userService = RetrofitInstance.getService(getBaseContext());
 
         login();
     }
@@ -63,25 +68,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void login() {
-        UserService userService = RetrofitInstance.getService(getBaseContext());
         User defaultUser = new User();
         defaultUser.setUsername("potae");
         defaultUser.setPassword("12345");
-        loginResponseObservable = userService.login(defaultUser);
+        Observable<Jwt> loginResponseObservable = userService.login(defaultUser);
         compositeDisposable.add(loginResponseObservable
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableObserver<Jwt>() {
                     @Override
-                    public void onNext(Jwt jwt) {
-                        System.out.println("NEXT");
-                        System.out.println(jwt.getAccessToken());
-                        getUsers(userService);
-                    }
+                    public void onNext(@NonNull Jwt jwt) { getUsers(); }
 
                     @Override
-                    public void onError(Throwable e) {
-
+                    public void onError(@NonNull Throwable e) {
+                        Toast.makeText(getBaseContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
@@ -91,35 +91,71 @@ public class MainActivity extends AppCompatActivity {
                 }));
     }
 
-    public void getUsers(UserService userService) {
+    public void getUsers() {
         userArrayList = new ArrayList<>();
-        usersResponseObservable = userService.getUsers();
-
+        Observable<ArrayList<User>> usersResponseObservable = userService.getUsers();
         compositeDisposable.add(usersResponseObservable
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableObserver<ArrayList<User>>() {
                     @Override
-                    public void onNext(ArrayList<User> users) {
-                        System.out.println(users);
-                        userArrayList.addAll(users);
+                    public void onNext(@NonNull ArrayList<User> users) { userArrayList.addAll(users); }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        Toast.makeText(getBaseContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
-                    public void onError(Throwable e) {
+                    public void onComplete() { initView(); }
+                }));
+    }
 
+
+
+    private void createUser(User user) {
+        Observable<User> userResponseObservable = userService.postUser(user);
+        compositeDisposable.add(userResponseObservable
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableObserver<User>() {
+                    @Override
+                    public void onNext(@NonNull User user) { }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        Toast.makeText(getBaseContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
                     public void onComplete() {
-                        init();
-                        System.out.println("COMPLETE");
+                        getUsers();
                     }
                 }));
+        Toast.makeText(MainActivity.this, getString(R.string.new_user) + ": " + user.getUsername(), Toast.LENGTH_SHORT).show();
     }
 
-    public void init() {
-        usersAdapter = new UsersAdapter(userArrayList, MainActivity.this);
+    private void updateUser(String id, User user) {
+        completable = userService.patchUserById(id, user);
+        compositeDisposable.add(completable
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::getUsers, e -> Toast.makeText(getBaseContext(), e.getMessage(), Toast.LENGTH_SHORT).show()));
+        Toast.makeText(MainActivity.this, getString(R.string.update_user) + ": " + user.getUsername(), Toast.LENGTH_SHORT).show();
+    }
+
+    private void deleteUser(String id) {
+        completable = userService.deleteUserById(id);
+        compositeDisposable.add(completable
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::getUsers, e -> Toast.makeText(getBaseContext(), e.getMessage(), Toast.LENGTH_SHORT).show()));
+        Toast.makeText(MainActivity.this, getString(R.string.delete_user), Toast.LENGTH_SHORT).show();
+    }
+
+    public void initView() {
+        swipeContainer.setRefreshing(false);
+        UsersAdapter usersAdapter = new UsersAdapter(userArrayList, MainActivity.this);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -153,8 +189,8 @@ public class MainActivity extends AppCompatActivity {
                 })
                 .setNegativeButton(getString(isUpdate ? R.string.delete : R.string.cancel),
                         (dialogBox, id) -> {
-                            if (isUpdate) {
-                                this.deleteUser(user);
+                            if (isUpdate && user != null) {
+                                deleteUser(user.getId());
                             } else {
                                 dialogBox.cancel();
                             }
@@ -178,22 +214,10 @@ public class MainActivity extends AppCompatActivity {
             }
             newUser.setPermissionLevel(Integer.parseInt(newPermissionLevel.getText().toString()));
             if (isUpdate && user != null) {
-                updateUser(newUser);
+                updateUser(user.getId(), newUser);
             } else {
                 createUser(newUser);
             }
         });
-    }
-
-    private void createUser(User user) {
-        Toast.makeText(MainActivity.this, "CREATE USER " + user.getId(), Toast.LENGTH_SHORT).show();
-    }
-
-    private void updateUser(User user) {
-        Toast.makeText(MainActivity.this, "UPDATE USER " + user.getId(), Toast.LENGTH_SHORT).show();
-    }
-
-    private void deleteUser(User user) {
-        Toast.makeText(MainActivity.this, "DELETE USER " + user.getId(), Toast.LENGTH_SHORT).show();
     }
 }

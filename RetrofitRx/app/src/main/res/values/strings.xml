@@ -2,6 +2,7 @@
     <string name="app_name">RetrofitRx</string>
     <string name="new_user">New User</string>
     <string name="update_user">Update User</string>
+    <string name="delete_user">Delete User</string>
     <string name="update">Update</string>
     <string name="save">Save</string>
     <string name="delete">Delete</string>

@@ -10,13 +10,8 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitInstance {
-    public RetrofitInstance(Context context) {
-        this.context = context;
-    }
 
-    private Context context;
     private static Retrofit retrofit = null;
-    private static String BASE_URL = "https://node-js-secure.herokuapp.com/";
 
     private static void getNewInstance(Context context) {
         OkHttpClient okHttpClient = new OkHttpClient().newBuilder()
@@ -28,6 +23,7 @@ public class RetrofitInstance {
                 .build();
 
         if (retrofit == null) {
+            String BASE_URL = "https://node-js-secure.herokuapp.com/";
             retrofit = new Retrofit
                     .Builder()
                     .baseUrl(BASE_URL)

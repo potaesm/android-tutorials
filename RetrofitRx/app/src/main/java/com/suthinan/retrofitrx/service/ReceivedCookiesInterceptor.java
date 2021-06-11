@@ -7,16 +7,18 @@ import android.util.Log;
 import java.io.IOException;
 import java.util.HashSet;
 
+import io.reactivex.annotations.NonNull;
 import okhttp3.Interceptor;
 import okhttp3.Response;
 
 import static android.content.ContentValues.TAG;
 
 public class ReceivedCookiesInterceptor implements Interceptor {
-    private Context context;
+    private final Context context;
     public ReceivedCookiesInterceptor(Context context) {
         this.context = context;
     }
+    @NonNull
     @Override
     public Response intercept(Chain chain) throws IOException {
         Response originalResponse = chain.proceed(chain.request());
