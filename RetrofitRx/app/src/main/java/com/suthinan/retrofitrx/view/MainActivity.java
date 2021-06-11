@@ -161,10 +161,12 @@ public class MainActivity extends AppCompatActivity {
                         });
 
         final AlertDialog alertDialog = alertDialogBuilderUserInput.create();
+        alertDialog.getWindow().setBackgroundDrawableResource(R.drawable.dialog_rounded_background);
         alertDialog.show();
+        alertDialog.setCanceledOnTouchOutside(true);
         alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             if (TextUtils.isEmpty(newUsername.getText().toString()) || TextUtils.isEmpty(newPermissionLevel.getText().toString()) || (!isUpdate && TextUtils.isEmpty(newPassword.getText().toString()))) {
-                Toast.makeText(MainActivity.this, "Please enter all mandatory data", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getBaseContext(), "Please enter all mandatory data", Toast.LENGTH_SHORT).show();
                 return;
             } else {
                 alertDialog.dismiss();
