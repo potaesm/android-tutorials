@@ -51,12 +51,13 @@ public class MainActivity extends AppCompatActivity {
         swipeContainer = findViewById(R.id.swipe_layout);
         swipeContainer.setColorSchemeResources(R.color.design_default_color_primary);
         swipeContainer.setOnRefreshListener(this::getUsers);
-        initView();
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> addAndEditUser(false, null));
 
         userService = RetrofitInstance.getService(getBaseContext());
+
+        initView();
 
         login();
     }
@@ -103,11 +104,14 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onError(@NonNull Throwable e) {
+                        swipeContainer.setRefreshing(false);
                         Toast.makeText(getBaseContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
-                    public void onComplete() { initView(); }
+                    public void onComplete() {
+                        swipeContainer.setRefreshing(false);
+                        initView(); }
                 }));
     }
 
@@ -154,7 +158,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void initView() {
-        swipeContainer.setRefreshing(false);
         UsersAdapter usersAdapter = new UsersAdapter(userArrayList, MainActivity.this);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
