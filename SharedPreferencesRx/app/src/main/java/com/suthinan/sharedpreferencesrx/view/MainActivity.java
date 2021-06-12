@@ -18,8 +18,8 @@ import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView textViewName;
-    private EditText editTextName;
+    private TextView textViewData;
+    private EditText editTextData;
     private Button buttonSubmit, buttonClear;
 
     private SharedPreferencesRepository sharedPreferencesRepository;
@@ -30,8 +30,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        textViewName = findViewById(R.id.text_view_name);
-        editTextName = findViewById(R.id.edit_text_name);
+        textViewData = findViewById(R.id.text_view_data);
+        editTextData = findViewById(R.id.edit_text_data);
         buttonSubmit = findViewById(R.id.button_submit);
         buttonClear = findViewById(R.id.button_clear);
 
@@ -47,13 +47,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void handleData() {
-        compositeDisposable.add(sharedPreferencesRepository.getData("NAME")
+        compositeDisposable.add(sharedPreferencesRepository.getData(getString(R.string.data_prefs))
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableObserver<String>() {
                     @Override
                     public void onNext(@NonNull String data) {
-                        textViewName.setText(data);
+                        textViewData.setText(data);
                     }
 
                     @Override
@@ -67,9 +67,12 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }));
         buttonSubmit.setOnClickListener(view -> {
-            String name = editTextName.getText().toString();
-            compositeDisposable.add(sharedPreferencesRepository.saveData("NAME", name).subscribe());
+            String name = editTextData.getText().toString();
+            compositeDisposable.add(sharedPreferencesRepository.saveData(getString(R.string.data_prefs), name).subscribe());
         });
-        buttonClear.setOnClickListener(view -> compositeDisposable.add(sharedPreferencesRepository.clearData("NAME").subscribe()));
+        buttonClear.setOnClickListener(view -> {
+            editTextData.setText("");
+            compositeDisposable.add(sharedPreferencesRepository.clearData(getString(R.string.data_prefs)).subscribe());
+        });
     }
 }
