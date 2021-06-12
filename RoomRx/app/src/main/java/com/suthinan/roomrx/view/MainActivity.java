@@ -59,6 +59,12 @@ public class MainActivity extends AppCompatActivity {
         getUsers();
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        compositeDisposable.clear();
+    }
+
     public void getUsers() {
         compositeDisposable.add(userDatabase.getUserDAO().getUsers()
                 .subscribeOn(Schedulers.computation())
