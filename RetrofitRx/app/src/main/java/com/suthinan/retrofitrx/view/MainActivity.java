@@ -93,14 +93,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void getUsers() {
-        userArrayList = new ArrayList<>();
+        swipeContainer.setRefreshing(true);
         Observable<ArrayList<User>> usersResponseObservable = userService.getUsers();
         compositeDisposable.add(usersResponseObservable
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableObserver<ArrayList<User>>() {
                     @Override
-                    public void onNext(@NonNull ArrayList<User> users) { userArrayList.addAll(users); }
+                    public void onNext(@NonNull ArrayList<User> users) {
+                        userArrayList.clear();
+                        userArrayList.addAll(users);
+                    }
 
                     @Override
                     public void onError(@NonNull Throwable e) {
