@@ -6,10 +6,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.suthinan.sharedpreferencesrx.R;
 import com.suthinan.sharedpreferencesrx.service.SharedPreferencesRepository;
-
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
@@ -47,28 +45,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void handleData() {
-        compositeDisposable.add(sharedPreferencesRepository.getData(getString(R.string.data_prefs))
+        compositeDisposable.add(sharedPreferencesRepository.getStringData(getString(R.string.data_prefs))
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableObserver<String>() {
                     @Override
                     public void onNext(@NonNull String data) {
                         textViewData.setText(data);
+                        Toast.makeText(getBaseContext(), "GET DATA: " + data, Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
-                    public void onError(@NonNull Throwable e) {
-                        Toast.makeText(getBaseContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
+                    public void onError(@NonNull Throwable e) { }
 
                     @Override
-                    public void onComplete() {
-                        Toast.makeText(getBaseContext(), "COMPLETE", Toast.LENGTH_SHORT).show();
-                    }
+                    public void onComplete() { }
                 }));
         buttonSubmit.setOnClickListener(view -> {
             String name = editTextData.getText().toString();
-            compositeDisposable.add(sharedPreferencesRepository.saveData(getString(R.string.data_prefs), name).subscribe());
+            compositeDisposable.add(sharedPreferencesRepository.saveStringData(getString(R.string.data_prefs), name).subscribe());
         });
         buttonClear.setOnClickListener(view -> {
             editTextData.setText("");
