@@ -43,16 +43,24 @@ public class MainActivity extends AppCompatActivity {
 
     private void handleData() {
         compositeDisposable.add(sharedPreferencesRepository.getStringData(getString(R.string.data_prefs))
-                .subscribeOn(Schedulers.computation())
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe((data) -> textViewData.setText(data)));
+
         buttonSubmit.setOnClickListener(view -> {
             String name = editTextData.getText().toString();
-            compositeDisposable.add(sharedPreferencesRepository.saveData(getString(R.string.data_prefs), name).subscribe());
+            compositeDisposable.add(sharedPreferencesRepository.saveData(getString(R.string.data_prefs), name)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe());
         });
+        
         buttonClear.setOnClickListener(view -> {
             editTextData.setText("");
-            compositeDisposable.add(sharedPreferencesRepository.clearData(getString(R.string.data_prefs)).subscribe());
+            compositeDisposable.add(sharedPreferencesRepository.clearData(getString(R.string.data_prefs))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe());
         });
     }
 }
