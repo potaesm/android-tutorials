@@ -23,56 +23,32 @@ public class SharedPreferencesRepository {
         return new SharedPreferencesRepository(context.getSharedPreferences(preferenceName, Context.MODE_PRIVATE));
     }
 
-    public void destroyInstance() {
+    public void destroy() {
         this.sharedPreferences.unregisterOnSharedPreferenceChangeListener(this.listener);
     }
 
-    public Completable saveStringData(String key, String data) {
-        return this.prefSubject.firstOrError().flatMapCompletable((prefs) -> Completable.fromAction(() -> {
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putString(key, data);
-            editor.apply();
-        }));
+    public Completable saveData(String key, String data) {
+        return this.prefSubject.firstOrError().flatMapCompletable((prefs) -> Completable.fromAction(() -> prefs.edit().putString(key, data).apply()));
     }
 
-    public Completable saveBooleanData(String key, Boolean data) {
-        return this.prefSubject.firstOrError().flatMapCompletable((prefs) -> Completable.fromAction(() -> {
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putBoolean(key, data);
-            editor.apply();
-        }));
+    public Completable saveData(String key, Boolean data) {
+        return this.prefSubject.firstOrError().flatMapCompletable((prefs) -> Completable.fromAction(() -> prefs.edit().putBoolean(key, data).apply()));
     }
 
-    public Completable saveFloatData(String key, Float data) {
-        return this.prefSubject.firstOrError().flatMapCompletable((prefs) -> Completable.fromAction(() -> {
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putFloat(key, data);
-            editor.apply();
-        }));
+    public Completable saveData(String key, Float data) {
+        return this.prefSubject.firstOrError().flatMapCompletable((prefs) -> Completable.fromAction(() -> prefs.edit().putFloat(key, data).apply()));
     }
 
-    public Completable saveIntData(String key, Integer data) {
-        return this.prefSubject.firstOrError().flatMapCompletable((prefs) -> Completable.fromAction(() -> {
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putInt(key, data);
-            editor.apply();
-        }));
+    public Completable saveData(String key, Integer data) {
+        return this.prefSubject.firstOrError().flatMapCompletable((prefs) -> Completable.fromAction(() -> prefs.edit().putInt(key, data).apply()));
     }
 
-    public Completable saveLongData(String key, Long data) {
-        return this.prefSubject.firstOrError().flatMapCompletable((prefs) -> Completable.fromAction(() -> {
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putLong(key, data);
-            editor.apply();
-        }));
+    public Completable saveData(String key, Long data) {
+        return this.prefSubject.firstOrError().flatMapCompletable((prefs) -> Completable.fromAction(() -> prefs.edit().putLong(key, data).apply()));
     }
 
-    public Completable saveStringSetData(String key, HashSet<String> data) {
-        return this.prefSubject.firstOrError().flatMapCompletable((prefs) -> Completable.fromAction(() -> {
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putStringSet(key, data);
-            editor.apply();
-        }));
+    public Completable saveData(String key, HashSet<String> data) {
+        return this.prefSubject.firstOrError().flatMapCompletable((prefs) -> Completable.fromAction(() -> prefs.edit().putStringSet(key, data).apply()));
     }
 
     public Observable<String> getStringData(String key) {
@@ -100,11 +76,10 @@ public class SharedPreferencesRepository {
     }
 
     public Completable clearData(String key) {
-        return this.prefSubject.firstOrError().flatMapCompletable((prefs) -> Completable.fromAction(() -> {
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.clear();
-            editor.remove(key);
-            editor.apply();
-        }));
+        return this.prefSubject.firstOrError().flatMapCompletable((prefs) -> Completable.fromAction(() -> prefs.edit().remove(key).apply()));
+    }
+
+    public Completable clearData() {
+        return this.prefSubject.firstOrError().flatMapCompletable((prefs) -> Completable.fromAction(() -> prefs.edit().clear().apply()));
     }
 }
