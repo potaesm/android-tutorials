@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe());
         });
-        
+
         buttonClear.setOnClickListener(view -> {
             editTextData.setText("");
             compositeDisposable.add(sharedPreferencesRepository.clearData(getString(R.string.data_prefs))
