@@ -33,9 +33,4 @@ public class RetrofitInstance {
         getNewInstance();
         return retrofit.create(UserService.class);
     }
-
-    public static MessageService getMessageService() {
-        getNewInstance();
-        return retrofit.create(MessageService.class);
-    }
 }
