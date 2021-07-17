@@ -14,7 +14,7 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 @Module
-public class RetrofitModule {
+public abstract class RetrofitModule {
     @Provides
     static ReceivedCookiesInterceptor provideReceivedCookiesInterceptor(@Named("context") Context context) {
         return new ReceivedCookiesInterceptor(context);
@@ -48,7 +48,7 @@ public class RetrofitModule {
     }
 
     @Provides
-    public UserService provideUserService(Retrofit retrofit) {
+    static UserService provideUserService(Retrofit retrofit) {
         return retrofit.create(UserService.class);
     }
 }
