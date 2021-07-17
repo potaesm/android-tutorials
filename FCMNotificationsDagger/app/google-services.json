@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "1085393832518",
+    "project_id": "nodejsfcm-suthinan",
+    "storage_bucket": "nodejsfcm-suthinan.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1085393832518:android:9610a19e75ad5b425e9847",
+        "android_client_info": {
+          "package_name": "com.suthinan.fcmnotifications"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1085393832518-utcf6pt6gk4ctaef78bk8g8s2q547pod.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhPwzD1Z76OUOM_DrpW8m9ewu1JCTmJRc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1085393832518-utcf6pt6gk4ctaef78bk8g8s2q547pod.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1085393832518:android:2c7fd468b3a418895e9847",
+        "android_client_info": {
+          "package_name": "com.suthinan.fcmnotificationsdagger"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1085393832518-utcf6pt6gk4ctaef78bk8g8s2q547pod.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhPwzD1Z76OUOM_DrpW8m9ewu1JCTmJRc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1085393832518-utcf6pt6gk4ctaef78bk8g8s2q547pod.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
