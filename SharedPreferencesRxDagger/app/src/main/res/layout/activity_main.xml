@@ -30,7 +30,7 @@ tools:context=".view.MainActivity">
     android:layout_height="wrap_content"
     android:layout_marginTop="@dimen/dimen_32">
 
-    <LinearLayout
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_centerHorizontal="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -48,7 +48,7 @@ tools:context=".view.MainActivity">
             android:layout_height="wrap_content"
             android:text="@string/clear_pref" />
 
-    </LinearLayout>
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
 </RelativeLayout>
 
