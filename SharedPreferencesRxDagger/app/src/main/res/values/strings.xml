@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">SharedPreferencesRxDagger</string>
+    <string name="enter_the_data">Enter the data</string>
+    <string name="submit">Submit</string>
+    <string name="clear_pref">Clear Preferences</string>
+    <string name="data_prefs">DATA</string>
+</resources>
